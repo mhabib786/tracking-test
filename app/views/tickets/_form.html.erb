@@ -1,0 +1,60 @@
+<h1 class="text-xl font-medium mb-8">Create new ticket</h1>
+<%= form_with model:@ticket do |form| %>
+  <div class="mb-4" data-controller="ticket-type">
+    <div class="relative">
+      <div id="ticketTypeButton" data-ticket-type-target="button" data-action="click->ticket-type#toggleMenu" class="block w-full bg-white border border-gray-300 px-4 py-2 pr-8 rounded shadow leading-tight focus:outline-none focus:shadow-outline flex justify-between items-center cursor-pointer">
+        <span id="selectedTicketType" data-ticket-type-target="selected" class="flex items-center">
+          Select Ticket Type
+        </span>
+        <div class="pointer-events-none absolute inset-y-0 right-0 flex items-center px-2 text-gray-700">
+          <i class="fas fa-chevron-down" style="color: #afacac;"></i>
+        </div>
+      </div>
+      <div id="ticketTypeMenu" data-ticket-type-target="menu" class="hidden absolute left-0 right-0 mt-2 bg-white border border-gray-300 rounded shadow-lg z-50">
+        <% Ticket.ticket_types.keys.each do |key| %>
+          <a href="#" class="block px-4 py-2 flex items-center" data-ticket-type-target="option" data-action="click->ticket-type#selectOption" data-ticket-type="<%= key %>" data-icon="<%= icon_color(key) %>" >
+            <i class="fas fa-circle mr-2 text-<%= icon_color(key) %>"></i>
+            <%= key.capitalize %>
+          </a>
+        <% end %>
+      </div>
+      <%= form.hidden_field :ticket_type, id: "ticketTypeField", data: { "ticket-type-target" => "hiddenField" } %>
+      <%= form.label :ticket_type, "Ticket Type", class: "absolute -mt-7 text-[#424247] font-normal transform translate-y-0.5 scale-75 top-2 px-1 left-0 bg-white" %>
+    </div>
+  </div>
+  <div class="mb-4 relative mt-8">
+    <%= form.text_field :summary, class:"block w-full px-2.5 pb-2.5 pt-4 text-sm  bg-transparent border border-gray-300 rounded-lg appearance-none focus:outline-none focus:ring-0 focus:border-blue-600"%>
+    <%= form.label :summary, class:"absolute -mt-7 text-[#424247] font-normal	 transform translate-y-0.5 scale-75 px-1 top-2 left-0 bg-white"%>
+  </div>
+  <div class="mb-4 relative mt-8">
+    <%= form.text_area :details, class: "block w-full px-2.5 pb-2.5 pt-4 text-sm text-gray-900 bg-transparent border border-gray-300 rounded-lg appearance-none focus:outline-none focus:ring-0 focus:border-blue-600", rows: "4" %>
+    <%= form.label :details, class: "absolute -mt-[27px] text-[#424247] font-normal transform translate-y-0.5 scale-75 px-1 top-2  left-0 bg-white" %>
+  </div>
+  <div class="mb-8 relative mt-8 flex flex-row border border-gray-300 rounded-lg py-1" >
+    <%= form.text_field :time_logged, step: 0.01, value: "0.00", class: "no-spinner  flex-grow p-2 text-gray-700", data: { form_swap_target: "input" }, onfocus: "this.value === '0.00' && (this.value = '')" %>
+    <%= form.label :time_logged, "Hours", class: "absolute -mt-7 text-[#424247] font-normal transform translate-y-0.5 scale-75 px-1 top-2 left-0 bg-white" %>
+    <div class="flex items-center">
+      <div class="flex flex-col items-center leading-none border-l border-gray-300 my-1">
+        <button type="button" class="px-1 text-gray-400" data-action="click->form-swap#increment" data-form-swap-target="countUp">
+          <i class="fas fa-caret-up"></i>
+        </button>
+        <button type="button" class="px-1 text-gray-400" data-action="click->form-swap#decrement" data-form-swap-target="counterDown">
+          <i class="fas fa-caret-down"></i>
+        </button>
+      </div>
+      <div class="items-center border-l border-gray-300">
+        <button type="button" class="px-2 py-1 text-gray-400 editButton" data-action="click->form-swap#enableEdit">
+          <i class="fas fa-pencil-alt"></i>
+        </button>
+      </div>
+    </div>
+  </div>
+  <div>
+    <%= form.submit "Save Ticket", class: "bg-[#2EA8C3] text-black py-4 w-full rounded font-normal text-lg",  data: { action: "form-swap#hideFormSubmit" }  %>
+  </div>
+  <div>
+    <button class="w-full text-[#2EA8C3] border-2 border-[#2EA8C3] my-4 py-4 px-4 rounded font-normal text-lg" type="button" data-action="form-swap#hideForm">
+      Cancel
+    </button>
+  </div>
+<% end %>

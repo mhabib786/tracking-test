@@ -1,0 +1,126 @@
+<style>
+  .scrollbar-hidden::-webkit-scrollbar {
+    display: none;  /* Hide scrollbar for webkit-based browsers (Chrome, Safari, etc.) */
+  }
+
+  .scrollbar-hidden {
+    -ms-overflow-style: none;  /* Hide scrollbar in IE and Edge */
+    scrollbar-width: none;  /* Hide scrollbar in Firefox */
+  }
+</style>
+<% begin %>
+  <div class="flex items-center  rounded-lg px-4 my-1">
+    <i class="fas fa-circle mr-2 text-<%= icon_color(ticket.ticket_type) %>"></i>
+    <% begin %>
+      <% if ticket.nil? %>
+        <span>Ticket details are not available.</span>
+      <% else %>
+        <p class="ml-2 font-medium text-sm max-w-[400px]  break-words">TECH-<%= ticket.id %> <span class="text-sm font-normal "> <%= ticket.summary %> </span> </p>
+      <% end %>
+      <% rescue => e %>
+      <span>Error: Unable to retrieve ticket details. Please try again later.</span>
+    <% end %>
+  </div>
+  <hr class="w-full border-gray-300 border-t-2 mb-4">
+  <div class="mb-4 relative px-4" data-controller="time-tracking">
+    <label for="log_time" class="block mb-2 font-normal text-lg">Log time manually</label>
+    <div class="flex items-center flex flex-row border border-gray-300 rounded ">
+      <input id="log_time" type="text" step="0.01" class= "no-spinner p-2 w-full" value="<%= ticket&.time_logged || 0.0 %>"  data-time-tracking-target="input" onfocus= "this.value === '0.00' && (this.value = '')" >
+      <div class="flex items-center">
+        <div class="flex flex-col items-center leading-none border-l border-gray-300 my-1">
+          <button type="button" class="px-1 text-gray-400" data-action="click->time-tracking#increment" data-time-tracking-target="countUp">
+            <i class="fas fa-caret-up"></i>
+          </button>
+          <button type="button" class="px-1 text-gray-400" data-action="click->time-tracking#decrement" data-time-tracking-target="counterDown">
+            <i class="fas fa-caret-down"></i>
+          </button>
+        </div>
+        <div class="items-center border-l border-gray-300">
+          <button type="button" class="px-2 py-1 text-gray-400 editButton" data-action="click->time-tracking#enableEdit">
+            <i class="fas fa-pencil-alt"></i>
+          </button>
+        </div>
+      </div>
+    </div>
+  </div>
+  <div class="mb-4 px-4">
+    <div>
+      <label class="block mb-2 text-lg font-normal">
+        Track with Timer 
+        <a href="#" class="ml-12   text-blue-500 text-sm font-normal underline font-medium <%= ticket.counter_type ? '' : 'hidden' %>" 
+        data-action="click->form-swap#toggle" data-timer="countup" data-form-swap-target="countup">
+          Use count up timer
+        </a>
+        <a href="#" 
+     class=" ml-12  text-blue-500 text-sm font-normal underline font-medium <%= ticket.counter_type ? 'hidden' : '' %>" 
+     data-action="click->form-swap#toggle" 
+          data-timer="countdown" 
+          data-form-swap-target="countdown">
+          Use count down timer
+        </a>
+      </label>
+    </div>
+    <div class="flex px-12 items-center space-x-6 mb-4">
+      <div class="relative">
+        <% ticket.start_time = ticket.formatted_time rescue 0 %>
+        <div class="flex items-center justify-center w-16 h-20 bg-white border border-gray-300 rounded shadow">
+          <input id="time_input" type="text"  class="text-4xl text-black text-center w-full h-full border-none focus:outline-none" readonly value="<%= ticket&.start_time&.hour.to_s.rjust(2, '0') || '00' %>"  data-action="click->form-swap#toggleDropdown" data-form-swap-target="timeInput">
+        </div>
+        <p id="timer_status" class="hidden"><%= ticket.counter_status %></p>
+        <div id="dropdown" class="absolute hidden border bg-white shadow-md w-full mt-1 z-10 max-h-48 overflow-y-auto scrollbar-hidden"
+         data-action="click->form-swap#closeDropdown" data-form-swap-target="dropdown">
+          <%= (00..23).map { |value| content_tag(:div, value.to_s.rjust(2, '0'), class: "px-2 py-1 cursor-pointer hover:bg-gray-200", 
+           data: { value: value, action: "click->form-swap#selectTime" }) }.join.html_safe %>
+        </div>
+      </div>
+      <span>:</span>
+      <div class="relative">
+        <div class="flex items-center justify-center w-16 h-20 bg-white border border-gray-300 rounded shadow">
+          <input id="minute_input" type="text"  class="text-4xl text-black text-center w-full h-full border-none focus:outline-none" readonly value="<%= ticket&.start_time&.min.to_s.rjust(2, '0') || '00' %>" data-action="click->form-swap#toggleDropdown" data-form-swap-target="minuteInput">
+        </div>
+        <div id="minute_dropdown" class="absolute hidden border bg-white shadow-md w-full mt-1 z-10 max-h-48 overflow-y-auto scrollbar-hidden"
+         data-action="click->form-swap#closeDropdown" data-form-swap-target="minuteDropdown">
+          <%= (0..59).map { |value| content_tag(:div, value.to_s.rjust(2, '0'), class: "px-2 py-1 cursor-pointer hover:bg-gray-200", 
+           data: { value: value, action: "click->form-swap#selectMinute" }) }.join.html_safe %>
+        </div>
+      </div>
+      <span>:</span>
+      <div class="relative">
+        <div class="flex items-center justify-center w-16 h-20 bg-white border border-gray-300 rounded shadow">
+          <input id="second_input" type="text"  class="text-4xl text-black text-center w-full h-full border-none focus:outline-none" readonly value="<%= ticket&.start_time&.sec.to_s.rjust(2, '0') || '00' %>"" data-action="click->form-swap#toggleDropdown" data-form-swap-target="secondInput">
+        </div>
+        <div id="second_dropdown" class="absolute hidden border bg-white shadow-md w-full mt-1 z-10 max-h-48 overflow-y-auto scrollbar-hidden"
+         data-action="click->form-swap#closeDropdown" data-form-swap-target="secondDropdown">
+          <%= (00..59).map { |value| content_tag(:div, value.to_s.rjust(2, '0'), class: "px-2 py-1 cursor-pointer hover:bg-gray-200", 
+           data: { value: value, action: "click->form-swap#selectSecond" }) }.join.html_safe %>
+        </div>
+      </div>
+    </div>
+    <div class="flex justify-between items-center space-x-3  ml-12  mr-16 mb-4">
+      <button class="underline p-2  text-gray-500"  data-form-swap-target="resetButton" data-action="form-swap#resetTime" data-url="<%= reset_timer_ticket_path(ticket) %>" > Reset </button>
+      <div class="w-full">
+        <button class="bg-green-500 text-white p-2 w-[160px] <%= 'hidden' if !ticket.counter_status.nil? %>" data-form-swap-target="startButton"  data-action="form-swap#startTime"   data-url="<%= update_start_time_ticket_path(ticket) %>">Start</button>
+        <button class="bg-green-500 text-white p-2 w-[160px] hidden" data-form-swap-target="resumeButton"  data-action="form-swap#resumeTime"   data-url="<%= resume_timer_ticket_path(ticket) %>">Resume</button>
+      </div>
+      <button class="underline p-2  text-gray-500" data-action="form-swap#stopTime" data-form-swap-target="stopButton" data-url="<%= stop_timmer_ticket_path(ticket) %>">Stop</button>
+    </div>
+    <hr class="mb-4">
+    <%= form_with model: ticket, local: true do |form| %>
+      <div class="mb-4">
+        <%= form.label :notes, class: "block mb-2" %>
+        <%= form.text_area :notes, class: "border p-2 text-base font-normal w-full h-24", id: "notes" %>
+      </div>
+      <div class="mb-4 hidden">
+        <%= form.label :log_time, class: "block mb-1" %>
+        <div class="flex items-center">
+          <%= form.text_field :time_logged, class: "border p-2 w-full", value: ticket&.time_logged || 0.0, id: "log_time_actual"%>
+        </div>
+      </div>
+      <div class="flex items-center space-x-2">
+        <%= button_tag "Cancel", type: "button", class: "rounded border-2	 border-[#2EA8C3] text-[#2EA8C3] px-2 py-4 w-full font-normal text-lg", data: { action: "form-swap#hideForm" } %>
+        <%= form.submit "Save", class: "bg-[#2EA8C3] text-black px-2 py-4 w-full rounded font-normal text-lg", data: {action: "form-swap#clearInterval"} %>
+      </div>
+    <% end %>
+  </div>
+  <%rescue%>
+<%end%>

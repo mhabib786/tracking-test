@@ -1,0 +1,23 @@
+<!DOCTYPE html>
+<html>
+  <head>
+    <title>TrackingTest</title>
+    <meta name="viewport" content="width=device-width,initial-scale=1">
+    <%= csrf_meta_tags %>
+    <%= csp_meta_tag %>
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/5.15.4/css/all.min.css">
+    <%= stylesheet_link_tag "application", "data-turbo-track": "reload" %>
+    <%= javascript_include_tag "application", "data-turbo-track": "reload", type: "module" %>
+    <style>
+    </style>
+  </head>
+  <body class="font-sans">
+    <div class="bg-[rgba(66,66,71,1)]  py-6 	">
+      <h1 class="ml-[70px] text-2xl	 text-[rgba(155,155,195,1)] font-normal w-[300px] h-[31px] top-[18px] left-[82px]">Ticket Time Tracker</h1>
+    </div>
+    <div class="flash-message" data-controller="flash">
+      <%= render "tickets/flash_messages" %>
+    </div>
+    <%= yield %>
+  </body>
+</html>

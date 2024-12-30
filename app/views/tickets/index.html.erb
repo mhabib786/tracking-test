@@ -1,0 +1,50 @@
+<div id="flash"></div>
+<div data-controller="form-swap">
+  <div class="ml-20 py-2 flex flex-col lg:flex-row gap-60">
+    <!-- Left Section - Ticket List -->
+    <div class="w-full lg:w-1/2 py-4" data-form-swap-target="ticketList">
+      <h2 class="text-xl font-medium">Existing tickets</h2>
+      <div class="py-4 overflow-hidden mt-4">
+        <table class="w-full">
+          <thead>
+            <tr>
+              <th class="text-left text-[13.02px] pl-2 italic font-normal mb-4">Ticket</th>
+              <th class="text-left text-[13.02px] pl-2 italic font-normal mb-4">Time Logged</th>
+            </tr>
+          </thead>
+          <tbody id="ticket_list" class="">
+            <% @tickets.each_with_index do |ticket,index| %>
+              <%= render 'ticket_row', ticket: ticket, index: index%>
+            <% end %>
+          </tbody>
+        </table>
+      </div>
+    </div>
+    <!-- Right Section - Details Section -->
+    <div class="bg-gray-100 my-6 py-4 px-8 border border-gray-300 rounded-[10px] max-w-md w-9/12 h-[637px]  left-[772px]" data-form-swap-target="detailsSection">
+      <div class="mb-20">
+        <p class="text-center text-base	font-medium mb-2">Select an existing ticket to log time</p>
+        <p class="text-center mb-2 text-base font-medium">Or</p>
+        <p class="text-center mb-2 text-base font-medium">
+          <a href="#" class="underline" data-action="form-swap#showForm">Create a new one</a>
+        </p>
+      </div>
+      <div class="space-y-4">
+        <div class="bg-gray-300 h-10"></div>
+        <div class="bg-gray-300 h-10"></div>
+        <div class="flex space-x-4">
+          <div class="bg-gray-300 h-10 flex-1"></div>
+          <div class="bg-gray-300 h-10 flex-1"></div>
+        </div>
+      </div>
+    </div>
+    <!-- Form Section -->
+    <div class="bg-white border border-gray-300 my-6 px-4 rounded-[10px] max-w-md w-9/12 h-auto" data-form-swap-target="formSection hidden" id="form_container">
+      <%= render 'form', locals: { ticket: @ticket } %>
+    </div>
+    <!-- Show Ticket Section -->
+    <div class="border border-gray-300 rounded-[10px] my-6 py-4 max-w-md w-9/12	 h-auto" data-form-swap-target="showSection" id="ticket_show">
+      <%= render 'show', locals: { ticket: nil } %>
+    </div>
+  </div>
+</div>
