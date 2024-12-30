@@ -15,3 +15,5 @@ A simple time tracking application built using Ruby on Rails, Stimulus.js, and T
 - **Rails version**: 7.1.5 or higher
 - **Node.js**: Required for Stimulus JS and Tailwind CSS
 - **Yarn**: For managing frontend dependencies
+
+![image](https://github.com/user-attachments/assets/548c934a-bd2b-4926-9f3f-1528a16a54be)
